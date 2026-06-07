@@ -1,108 +1,85 @@
 ---
 name: promptshift
 description: |
-  Model-aware prompt adapter for Claude. Trigger phrases: "optimize this prompt", "adapt for [model]", "rewrite for [model]", "this prompt is for [model]", "make this work on [model]", "prompt isn't performing on [model]", "translate prompt to [model]". Use aggressively when model-specific adaptation or optimization is required.
+  Model-aware prompt adapter for Claude. Trigger phrases: "optimize this prompt", "adapt for [model]", "rewrite for [model]", "this prompt is for [model]", "make this work on [model]", "prompt isn't performing on [model]", "translate prompt to [model]". Use aggressively whenever prompt adaptation or model-specific optimization is involved.
 ---
 
-**Triage — first step always:**
+**Purpose**
 
-- SIMPLE: single task, clear intent, one output type → skip to model adaptation
-- COMPLEX: multi-step, agentic, contradictions, high-stakes → run full workflow
+PromptShift rewrites prompts by removing ambiguity, preserving intent, and applying only the smallest useful adjustment.
 
-**Full workflow:**
+**Core principles**
 
-1. Triage (simple / complex)
-2. Pattern detection: zero-shot / few-shot / role-based / CoT / ReAct / tool-calling / RAG / hybrid
-3. Task classification (multi-label): reasoning / coding / writing / extraction / summarization / planning / RAG / agent / multimodal / other
-4. Model adaptation using knowledge base
-5. Repair pass: ambiguities → explicit; weak constraints → add schema; contradictions → resolve; redundancy → cut; missing examples when needed → add one
-6. Structured output
+- Clarity first.
+- Preserve intent.
+- Minimal change.
+- Model adaptation second.
+- Prefer evidence over folklore.
 
-**Model knowledge base — render as markdown table: Model | Anti-patterns to avoid | Key optimization rules**
+**Triage — first step always**
 
-Group by family:
+- SIMPLE: one task, clear intent, one output type → rewrite directly
+- COMPLEX: multi-step, contradictory, agentic, or high-stakes → decompose and rewrite
 
-**OpenAI**
+**Rewrite rules**
 
-| Model | Anti-patterns to avoid | Key rules |
-|---|---|---|
-| GPT-5.5 | Over-scaffolding, no role | Assign explicit role; Objective + Context formula; constrain output length; anchor instructions at end; strong at reasoning and code |
-| GPT-5.4 / GPT-5.4 Thinking | Explicit CoT on Thinking variant | For Thinking variant treat like o1 (no CoT); for base variant use explicit role + format |
-| o3 / o4-mini | Explicit chain-of-thought | No "think step by step"; state goal only; trust internal reasoning; minimal scaffolding |
-| GPT-4o | Verbosity without constraints | Role + goal + explicit length limit; anchor key instructions at end |
+1. Preserve the original goal, audience, constraints, and evaluation criteria unless they are missing or contradictory.
+2. Do not invent new requirements.
+3. Do not expand the prompt unless the added text reduces ambiguity, improves reliability, enforces required format, or prevents a likely failure mode.
+4. If the prompt is already clear, structured, and constrained, make only cosmetic fixes or return it unchanged.
+5. Use model-specific adaptation only when it materially changes the rewrite.
 
-**Anthropic**
+**Repair pass**
 
-| Model | Anti-patterns | Key rules |
-|---|---|---|
-| Claude Opus 4.8 / 4.7 | Over-constraining, contradictions | XML tags for structure; explain WHY not just WHAT; "think step by step" works well; audit for contradictions; extended thinking opt-in for hard tasks |
-| Claude Sonnet 4.6 | Loose output format | XML tags; explicit format; strong at code and long documents |
+- Make missing context explicit.
+- Remove contradictions.
+- Cut redundancy.
+- Add only the minimum structure needed for reliable output.
+- Avoid prompt bloat.
 
-**Google**
+**Minimal model guidance**
 
-| Model | Anti-patterns | Key rules |
-|---|---|---|
-| Gemini 2.5 Pro | Abstract prose instructions | Bullet-point instructions; imperative verbs; explicit length constraints; "Analyze this file" framing for multimodal |
-| Gemini 2.5 Flash | Ambiguous brevity | Specify exact word/token targets; optimizes aggressively for speed |
+- Unknown / mixed models: clear role, explicit format, one example only if needed, one length constraint only if needed.
+- Reasoning-oriented models: keep instructions direct; avoid forcing visible chain-of-thought.
+- Format-sensitive models: use concise schema, bullets, sections, or XML only when structure matters.
+- Retrieval-oriented models: require citations and grounded source use.
+- Conversational models: keep the prompt direct and task-focused.
 
-**xAI**
+**Evidence rule**
 
-| Model | Anti-patterns | Key rules |
-|---|---|---|
-| Grok 4.3 / 4.1 | Overly formal prompts | Conversational framing; real-time web context works natively; "Investigate and summarize" framing; tolerates less structure |
+- Prefer rules with broad public support or repeated observation.
+- Treat model-version claims as temporary heuristics.
+- Label uncertain rules as heuristics, not facts.
 
-**DeepSeek**
+**Output format**
 
-| Model | Anti-patterns | Key rules |
-|---|---|---|
-| DeepSeek R1 | Explicit reasoning instructions | Treat like o1; "reason in detail" framing works; no step-by-step scaffolding; strong on math and logic |
-| DeepSeek V4 Pro / Flash | Loose output constraints | Explicit format; role assignment helps; 1M context; strong agentic coding; "Generate complete code" framing |
+Return exactly one of these:
 
-**Meta**
+### If changed
+## ANALYSIS
+[2-3 sentences: what was unclear, what was changed, why it was necessary]
 
-| Model | Anti-patterns | Key rules |
-|---|---|---|
-| Llama 4 Scout / Maverick | Abstract rules, long system prompts | Few-shot over zero-shot; "Act as expert" role framing; explicit output format; keep system prompt under 300 tokens; leverage vision natively |
-| Llama 3.3 | Same as above | Few-shot; short system prompt; explicit schema |
+## OPTIMIZED PROMPT
+[rewritten prompt]
 
-**Mistral**
+## CHANGES
+[change] → [why it was necessary]
 
-| Model | Anti-patterns | Key rules |
-|---|---|---|
-| Mistral Medium 3.5 | Abstract or implicit constraints | Always include examples; every constraint explicit; 128B dense model — consistent and predictable; "Concise response" framing; open-weight |
-| Mistral Small 4 | Complex multi-step | Single task per prompt; explicit format; fine-tunable |
+## CONFIDENCE
+[Low / Medium / High]
 
-**Alibaba / Moonshot**
+### If unchanged
+## ANALYSIS
+[2-3 sentences: the prompt was already clear and required no substantive rewrite]
 
-| Model | Anti-patterns | Key rules |
-|---|---|---|
-| Qwen3 / Qwen 3.6 | Unformatted prompts | Explicit schemas; structured markdown; strong multilingual and code; "Explain with examples" framing |
-| Kimi K2.6 | Implicit context | State all context explicitly; strong for long-horizon research and agentic coding; "Research deeply" framing |
+## OPTIMIZED PROMPT
+[unchanged prompt]
 
-**Other**
+## CHANGES
+No substantive changes.
 
-| Model | Anti-patterns | Key rules |
-|---|---|---|
-| Command R+ | Ignoring RAG strengths | Citation instructions; explicit source referencing; grounded generation framing |
-| Phi-4 / Gemma 3 | Multi-step complexity | Single task per prompt; explicit format required |
-| Unknown model | — | Universal version: clear role + explicit format + one example + no CoT assumption |
-
-**Enforced output format — Claude must always return exactly this:**
-
-ANALYSIS
-[2-3 sentences: pattern identified, main issues, complexity level]
-OPTIMIZED PROMPT
-[Complete prompt, ready to copy-paste]
-CHANGES
-
-[Change] → [Model-specific reason from knowledge base]
-(list all changes)
-
-SCORE
-Before: X/10
-After:  X/10
-Key gain: [one line]
-
+## CONFIDENCE
+High
 
 **Worked example**
 
@@ -110,21 +87,21 @@ Key gain: [one line]
 - Target: Gemini 2.5 Pro
 
 ## ANALYSIS
-The prompt is zero-shot, vague on audience and angle, and lacks length constraints — pattern: zero-shot / summarization. Complexity: SIMPLE.
+The prompt is underspecified: it lacks audience, angle, and output shape. Complexity: SIMPLE.
 
 ## OPTIMIZED PROMPT
-Act as an expert policy analyst. Summarize the attached article about recent climate policy developments and their implications for global emissions in 6 bullet points: 1 sentence each. Include one short (2-sentence) takeaway for policymakers and one quantified risk or uncertainty. Use clear, imperative bullet labels and keep total length under 200 words.
+Act as an expert policy analyst. Summarize the attached article about recent climate policy developments and their implications for global emissions in 6 bullet points, one sentence each. Include one short takeaway for policymakers and one quantified risk or uncertainty. Keep the total length under 200 words.
 
 ## CHANGES
 
-[Added role: "expert policy analyst"] → Gemini 2.5 Pro responds best to imperative role framing and structured output.
-[Converted zero-shot to structured brief] → Bullet format + explicit counts reduces ambiguity.
-[Added length limit and exact items] → Prevents verbosity and aligns with Gemini token preferences.
-[Added policy-focused takeaway and quantified risk] → Matches Gemini's strength for focused analytical output.
+[Added role: "expert policy analyst"] → Clarifies framing.
+[Added exact structure] → Controls output shape.
+[Added length limit] → Prevents verbosity.
+[Added policy takeaway and risk] → Forces a more useful summary.
 
-## SCORE
-Before: 4/10
-After: 9/10
-Key gain: Precision and explicit structure reduce variance and improve factual, actionable output.
+## CONFIDENCE
+High
 
-Constraints: under 400 lines; return only the enforced output format for each adaptation.
+**Maintenance note**
+
+Revalidate model guidance periodically. Remove any rule that no longer produces measurable benefit.
