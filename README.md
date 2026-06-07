@@ -100,7 +100,7 @@ Three complete before/after walkthroughs (GPT-5.5 · o3 · Mistral Medium 3.5) �
 
 ## Contributing
 
-PRs welcome — one concern per PR. See [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) for how to add a model or submit a new example.
+PRs welcome — one concern per PR. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for how to add a model or submit a new example.
 
 ---
 
