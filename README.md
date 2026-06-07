@@ -1,79 +1,82 @@
 # promptshift
 
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)]() [![Active](https://img.shields.io/badge/status-active-brightgreen.svg)]()  
-Made for Claude Skills
+Made for Claude Skills — model-aware prompt adaptation and repair.
 
-promptshift adapts and optimizes prompts for specific AI models. Given a prompt and a target model, it applies model-aware transformation rules, repairs structural issues, and returns a scored before/after result.
+Short summary
 
-## What it solves
+- Convert a generic prompt into a model-optimized prompt.  
+- Produce a concise before/after with an explanation of changes and a numeric score.  
+- Designed for prompt engineers and teams working across multiple LLMs.
 
-- Prompts that fail silently because they are generic and not tailored to a model's strengths.
-- Variance in output quality across models due to missing role, format, or examples.
+Quickstart — pick one
 
-## How it works
+- Web (no install, recommended): Create a new repository on GitHub `Alvaro-Manzo/promptshift`, then use **Add file → Upload files** to upload this repo's files. Commit directly to `main` with message `chore: standardize author to Alvaro-Manzo`.
+- Local (if `git` is already available): run
 
-- Triage the incoming prompt (simple vs complex).
-- Detect prompt pattern (zero-shot, few-shot, CoT, role-based, etc.).
-- Classify the task (reasoning, coding, writing, extraction, summarization, planning, RAG, agent, multimodal).
-- Apply model-specific rules from a built knowledge base to adapt wording, structure, and examples.
-- Run a repair pass and produce a structured before/after with a score.
+```bash
+git init
+git add -A
+git commit -m "chore: standardize author to Alvaro-Manzo"
+git branch -M main
+git remote add origin https://github.com/Alvaro-Manzo/promptshift.git
+git push -u origin main
+```
 
-## Supported models
+How to use the skill (summary)
 
-| Family | Models | Prompt style |
-|---|---|---|
-| OpenAI | GPT-5.5, GPT-5.4, o3, GPT-4o | Role + explicit limits; anchor key instructions at end |
-| Anthropic | Claude Opus 4.8 / 4.7, Claude Sonnet 4.6 | XML tags, explain WHY; allow CoT when useful |
-| Google | Gemini 2.5 Pro, Gemini 2.5 Flash | Bullet/imperative, explicit length constraints |
-| xAI | Grok 4.3, Grok 4.1 | Conversational framing; tolerate less rigid structure; real-time/web context framing |
-| DeepSeek | DeepSeek R1, DeepSeek V4 Pro/Flash | Explicit reasoning framing; explicit format for code and math |
-| Meta | Llama 4 Scout, Maverick, Llama 3.3 | Few-shot preferred; short system prompts; explicit schema; vision-aware where relevant |
-| Mistral | Mistral Medium 3.5, Mistral Small 4 | Always include examples; explicit constraints; concise responses |
-| Alibaba / Moonshot | Qwen3, Qwen 3.6, Kimi K2.6 | Explicit schemas; structured markdown; multilingual and long-context strengths |
-| Other | Command R+, Phi-4, Gemma 3, Unknown | RAG/citation framing; single-task, explicit format; universal fallback: role + example + explicit format |
+- Import `skill/SKILL.md` into the Claude Skills UI or your Claude SDK as a skill.  
+- Trigger with one of the phrases in the skill frontmatter (for example: "adapt for [model]" or "optimize this prompt").  
+- The skill will run a triage + pattern-detection + model-adaptation + repair pass and return the enforced output format.
 
-## Installation
-
-1. Copy `skill/SKILL.md` into Claude Skills import UI or follow Claude SDK instructions for skill registration.
-2. Ensure the skill is enabled for the agent and that triggers include the listed trigger phrases.
-3. Optionally, add `examples/examples.md` to your repository for team reference.
-
-## Usage (worked example)
+Minimal usage example (copy-paste ready)
 
 Input: "Summarize the attached article about recent climate policy developments and their implications for global emissions."  
 Target: Gemini 2.5 Pro
 
 ## ANALYSIS
-The prompt is zero-shot, vague on audience and angle, and lacks length constraints — pattern: zero-shot / summarization. Complexity: SIMPLE.
+The prompt is zero-shot and lacks audience, length, and output structure — pattern: zero-shot / summarization. Complexity: SIMPLE.
 
 ## OPTIMIZED PROMPT
-Act as an expert policy analyst. Summarize the attached article about recent climate policy developments and their implications for global emissions in 6 bullet points: 1 sentence each. Include one short (2-sentence) takeaway for policymakers and one quantified risk or uncertainty. Use clear, imperative bullet labels and keep total length under 200 words.
+Act as an expert policy analyst. Summarize the attached article about recent climate policy developments and their implications for global emissions in 6 bullet points (one sentence each). Include one short (2-sentence) takeaway for policymakers and one quantified key risk or uncertainty. Use imperative bullet labels and keep the total length under 200 words.
 
 ## CHANGES
 
-[Added role: "expert policy analyst"] → Gemini 2.5 Pro responds best to imperative role framing and structured output.
-[Converted zero-shot to structured brief] → Bullet format + explicit counts reduces ambiguity.
-[Added length limit and exact items] → Prevents verbosity and aligns with Gemini token preferences.
-[Added policy-focused takeaway and quantified risk] → Matches Gemini's strength for focused analytical output.
+- Added role: `expert policy analyst` → clarifies voice and framing for Gemini 2.5 Pro.  
+- Converted zero-shot to structured brief → bullet list + exact counts to reduce ambiguity.  
+- Added length constraint and policy-focused takeaway → reduces verbosity and increases actionability.
 
 ## SCORE
 Before: 4/10  
 After: 9/10  
 Key gain: Precision and explicit structure reduce variance and improve factual, actionable output.
 
-## More examples
+Supported models (condensed)
 
-See `examples/examples.md` for additional before/after adaptations.
+| Family | Example models | Prompt style |
+|---|---|---|
+| OpenAI | GPT-5.5, GPT-5.4, o3, GPT-4o | Role + explicit limits; anchor key instructions at end |
+| Anthropic | Claude Opus / Sonnet | XML tags, explain WHY; CoT when useful |
+| Google | Gemini 2.5 Pro / Flash | Bullet/imperative; explicit length constraints |
+| xAI | Grok | Conversational framing; real-time/web context |
+| DeepSeek | DeepSeek R1 / V4 | Explicit reasoning; format for math/code |
+| Meta | Llama 4 / 3.3 | Few-shot preferred; short system prompts |
+| Mistral | Medium 3.5, Small 4 | Few-shot examples; explicit schema |
+| Alibaba / Moonshot | Qwen3 / Kimi | Structured markdown; multilingual support |
+| Other | Command R+, Phi-4, Unknown | RAG/citation framing; explicit schema fallback |
 
-## Contributing
+Where to find more
 
-Contributions welcome — see `.github/CONTRIBUTING.md` for guidelines.
+- Examples: `examples/examples.md`  
+- Contribution guidelines: `.github/CONTRIBUTING.md`  
+- Issue templates: `.github/ISSUE_TEMPLATE/`
 
-## Author
+Contributing
 
-Alvaro-Manzo · https://github.com/Alvaro-Manzo
+Brief: open a PR with one concern per PR. See `CONTRIBUTING.md` for details.
 
-## License
+Author & license
 
+Alvaro-Manzo · https://github.com/Alvaro-Manzo  
 MIT
 # promptshift
