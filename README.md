@@ -1,23 +1,182 @@
-# promptshift
+# PromptShift
 
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/status-active-brightgreen.svg)]()
-[![Made for Claude Skills](https://img.shields.io/badge/made%20for-Claude%20Skills-blueviolet.svg)]()
+[![Active](https://img.shields.io/badge/status-active-brightgreen.svg)](https://github.com/Alvaro-Manzo/promptshift)
+[![Made for Claude Skills](https://img.shields.io/badge/made%20for-Claude%20Skills-blueviolet.svg)](skill/SKILL.md)
 
-> Model-aware prompt adapter for Claude — translate any prompt to GPT, Gemini, Mistral, Llama and more.
+PromptShift is a model-aware prompt adapter for Claude.
 
-Prompts built for one model fail silently on another. promptshift is a Claude skill that takes any prompt, applies model-specific transformation rules, runs a repair pass, and returns a scored before/after result — ready to copy-paste.
+Unlike most prompt optimizers, PromptShift follows a conservative approach:
+
+> Clarify first. Preserve intent. Adapt to the model only when it matters.
+
+Its goal is not to make prompts longer. Its goal is to make them clearer, more reliable, and easier for different model families to execute consistently.
 
 ---
 
-## How it works
+## Why PromptShift Exists
 
-1. **Triage** — classifies the prompt as simple or complex
-2. **Pattern detection** — identifies zero-shot, few-shot, CoT, role-based, ReAct, tool-calling, RAG, or hybrid
-3. **Task classification** — labels the task type (reasoning, coding, writing, extraction, agent, multimodal…)
-4. **Model adaptation** — applies model-specific rules from the knowledge base
-5. **Repair pass** — fixes ambiguities, weak constraints, contradictions, and missing examples
-6. **Scored output** — returns ANALYSIS + OPTIMIZED PROMPT + CHANGES + numeric SCORE
+Many prompt optimization tools introduce new requirements, audiences, or constraints that were never part of the original request.
+
+For example:
+
+**Original prompt**
+
+```text
+Summarize this article.
+```
+
+**Typical optimizer**
+
+```text
+Act as an expert policy analyst.
+Summarize the article for decision-makers.
+Include risks, opportunities, and strategic recommendations.
+```
+
+The task has changed.
+
+PromptShift treats this as a failure.
+
+The objective is to improve prompt quality without changing the user's intent.
+
+---
+
+## Design Principles
+
+PromptShift follows five principles:
+
+1. **Clarity first**
+
+   * Remove ambiguity before adding structure.
+
+2. **Preserve intent**
+
+   * Do not invent goals, audiences, constraints, or evaluation criteria.
+
+3. **Minimal change**
+
+   * If the prompt is already good, leave it alone.
+
+4. **Model adaptation second**
+
+   * Apply model-specific guidance only when it materially improves the rewrite.
+
+5. **Evidence over folklore**
+
+   * Prefer broadly supported prompting practices over model-specific myths.
+
+---
+
+## What It Does
+
+PromptShift can:
+
+* Clarify ambiguous instructions.
+* Normalize prompt structure.
+* Remove contradictions.
+* Reduce redundancy.
+* Add output schemas when needed.
+* Adapt prompts across model families.
+* Preserve original intent.
+
+PromptShift intentionally avoids:
+
+* Prompt bloat.
+* Artificial complexity.
+* Role inflation.
+* Requirement invention.
+* Unsupported optimization tricks.
+
+---
+
+## Workflow
+
+```text
+Input Prompt
+      │
+      ▼
+   Triage
+      │
+      ▼
+ Clarify Intent
+      │
+      ▼
+ Repair Issues
+      │
+      ▼
+ Minimal Model Adaptation
+      │
+      ▼
+ Optimized Prompt
+```
+
+---
+
+## Example
+
+### Input
+
+```text
+Summarize the attached article about recent climate policy developments and their implications for global emissions.
+```
+
+### Output
+
+```text
+## ANALYSIS
+
+The prompt is underspecified because it does not define output shape or length. The task itself is clear.
+
+## OPTIMIZED PROMPT
+
+Summarize the attached article about recent climate policy developments and their implications for global emissions.
+
+Output requirements:
+- 6 bullet points
+- One sentence per bullet
+- Maximum 200 words
+
+## CHANGES
+
+Added explicit output structure.
+Added length constraint.
+
+## CONFIDENCE
+
+High
+```
+
+Notice that the objective remains unchanged.
+
+PromptShift improves clarity without redefining the task.
+
+---
+
+## Supported Adaptation Profiles
+
+| Profile            | Typical Use Case              |
+| ------------------ | ----------------------------- |
+| Unknown / Mixed    | Safe default behavior         |
+| Reasoning-Oriented | Logic, planning, analysis     |
+| Format-Sensitive   | Structured outputs, schemas   |
+| Retrieval-Oriented | Source-grounded tasks         |
+| Conversational     | Natural-language interactions |
+
+The skill includes model-family mappings for Claude, GPT, Gemini, Grok, DeepSeek, Llama, Mistral, Qwen, Kimi, and Command R+.
+
+---
+
+## Non-Goals
+
+PromptShift does not:
+
+* Guarantee better outputs.
+* Replace prompt iteration.
+* Add missing business requirements.
+* Inject domain expertise automatically.
+* Depend on hidden chain-of-thought.
+* Optimize for benchmark scores.
 
 ---
 
@@ -27,89 +186,22 @@ Prompts built for one model fail silently on another. promptshift is a Claude sk
 git clone https://github.com/Alvaro-Manzo/promptshift.git
 ```
 
-1. Copy `skill/SKILL.md` into the Claude Skills import UI, or register it via the Claude SDK
-2. Confirm the skill is enabled and that trigger phrases from the frontmatter are active
-3. Optionally add `examples/examples.md` to your project for team reference
-
-**Trigger phrases (any of these activate the skill):**
-`"optimize this prompt"` · `"adapt for [model]"` · `"rewrite for [model]"` · `"this prompt is for [model]"` · `"make this work on [model]"` · `"prompt isn't performing on [model]"`
-
----
-
-## Usage example
-
-**Input prompt:**
-```
-Summarize the attached article about recent climate policy developments
-and their implications for global emissions.
-```
-**Target model:** Gemini 2.5 Pro
-
----
-
-### ANALYSIS
-Zero-shot prompt, no audience, no output structure, no length constraint. Pattern: zero-shot / summarization. Complexity: SIMPLE.
-
-### OPTIMIZED PROMPT
-```
-Act as an expert policy analyst. Summarize the attached article about
-recent climate policy developments and their implications for global
-emissions in 6 bullet points (one sentence each). Include one short
-(2-sentence) takeaway for policymakers and one quantified key risk or
-uncertainty. Use imperative bullet labels. Total length: under 200 words.
-```
-
-### CHANGES
-- Added role `expert policy analyst` → Gemini 2.5 Pro responds best to imperative role framing
-- Converted to structured brief → explicit bullet count reduces ambiguity
-- Added length constraint → prevents verbosity on Gemini
-- Added policy takeaway and quantified risk → matches Gemini's strength for focused analytical output
-
-### SCORE
-| | |
-|---|---|
-| Before | 4 / 10 |
-| After | 9 / 10 |
-| Key gain | Explicit structure eliminates output variance |
-
----
-
-## Supported models
-
-| Family | Models | Prompt style |
-|---|---|---|
-| OpenAI | GPT-5.5, GPT-5.4, o3, GPT-4o | Role + explicit limits; anchor key instructions at end |
-| Anthropic | Claude Opus 4.8 / Sonnet 4.6 | XML tags; explain WHY; CoT opt-in for hard tasks |
-| Google | Gemini 2.5 Pro / Flash | Bullet/imperative instructions; explicit length constraints |
-| xAI | Grok 4.3 / 4.1 | Conversational framing; real-time web context native |
-| DeepSeek | R1, V4 Pro / Flash | No CoT scaffolding for R1; explicit format for V4 |
-| Meta | Llama 4 Scout / Maverick, 3.3 | Few-shot preferred; short system prompt under 300 tokens |
-| Mistral | Medium 3.5, Small 4 | Always include examples; every constraint explicit |
-| Alibaba / Moonshot | Qwen3 / Kimi K2.6 | Structured markdown; multilingual; explicit schema |
-| Other | Command R+, Phi-4, Unknown | RAG/citation framing; explicit schema fallback |
-
-Full model rules → [`skill/SKILL.md`](skill/SKILL.md)
-
----
-
-## More examples
-
-Three complete before/after walkthroughs (GPT-5.5 · o3 · Mistral Medium 3.5) → [`examples/examples.md`](examples/examples.md)
+Copy `skill/SKILL.md` into your Claude Skills directory and enable the skill.
 
 ---
 
 ## Contributing
 
-PRs welcome — one concern per PR. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for how to add a model or submit a new example.
+Contributions are welcome.
 
----
+When proposing a new adaptation rule:
 
-## Author
-
-**Alvaro Manzo** · [github.com/Alvaro-Manzo](https://github.com/Alvaro-Manzo)
+* Explain why it helps.
+* Provide evidence or repeatable observations.
+* Prefer general principles over model-specific quirks.
 
 ---
 
 ## License
 
-[MIT](LICENSE) © 2026 Alvaro Manzo
+MIT License © 2026 Alvaro Manzo
