@@ -1,5 +1,5 @@
 
-![LOGO](file:///var/folders/3j/xfq017dj42s4gcfh87tbq8300000gn/T/TemporaryItems/NSIRD_screencaptureui_iYrhOE/Captura%20de%20Pantalla%202026-06-07%20a%20la(s)%2021.21.01.png)
+![LOGO](promptshift-logo.png)
 
 
 # PromptShift
