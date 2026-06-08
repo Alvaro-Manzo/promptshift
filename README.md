@@ -1,224 +1,183 @@
-
 ![LOGO](promptshift-logo.png)
 
-
 # PromptShift
-[![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Active](https://img.shields.io/badge/status-active-brightgreen.svg)](https://github.com/Alvaro-Manzo/promptshift)
+
+[![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  
+[![Status](https://img.shields.io/badge/status-active-brightgreen.svg)](https://github.com/Alvaro-Manzo/promptshift)  
 [![Made for Claude Skills](https://img.shields.io/badge/made%20for-Claude%20Skills-orange.svg)](skill/SKILL.md)
 
-PromptShift is a model-aware prompt adapter for Claude.
+> PromptShift is a model-aware prompt adapter for Claude.
 
-Unlike most prompt optimizers, PromptShift follows a conservative approach:
-
-> Clarify first. Preserve intent. Adapt to the model only when it matters.
-
-Its goal is not to make prompts longer. Its goal is to make them clearer, more reliable, and easier for different model families to execute consistently.
+It improves prompts by making them clearer and more reliable — without changing what the user actually meant.
 
 ---
 
-## Why PromptShift Exists
+## 🧠 What PromptShift Does
 
-Many prompt optimization tools introduce new requirements, audiences, or constraints that were never part of the original request.
+Most prompt optimizers change your intent without realizing it.
 
-For example:
+PromptShift does the opposite:
 
-**Original prompt**
+> **It rewrites prompts while preserving intent as the highest constraint.**
+
+It improves:
+- Clarity
+- Structure
+- Consistency across models
+
+Without adding:
+- New goals
+- New requirements
+- Artificial complexity
+
+---
+
+## ⚙️ Why It Exists
+
+Prompt optimization tools often “help” by rewriting your prompt into something more verbose, like:
+
+**Input**
 
 ```text
 Summarize this article.
 ```
 
-**Typical optimizer**
+Typical optimizer output (problematic):
 
 ```text
-Act as an expert policy analyst.
-Summarize the article for decision-makers.
-Include risks, opportunities, and strategic recommendations.
+Act as an expert analyst and provide strategic insights, risks, and implications...
 ```
 
-The task has changed.
+That’s not the same task anymore. PromptShift treats that as intent drift.
 
-PromptShift treats this as a failure.
+### 🧩 Core Principles
+- **Clarity first** — Remove ambiguity before adding structure.
+- **Preserve intent** — Never invent goals, audiences, or constraints.
+- **Minimal change** — If the prompt is already good → leave it.
+- **Model-aware (not model-dependent)** — Adapt only when it measurably improves output.
+- **No prompt inflation** — Avoid unnecessary roles, fluff, or “AI personas”.
 
-The objective is to improve prompt quality without changing the user's intent.
+### 🔄 How It Works
 
----
+Prompt Input
+     ↓
+Triage (Simple / Complex)
+     ↓
+Clarify Ambiguity
+     ↓
+Repair Weak Constraints
+     ↓
+Minimal Model Adaptation
+     ↓
+Optimized Prompt
 
-## Design Principles
-
-PromptShift follows five principles:
-
-1. **Clarity first**
-
-   * Remove ambiguity before adding structure.
-
-2. **Preserve intent**
-
-   * Do not invent goals, audiences, constraints, or evaluation criteria.
-
-3. **Minimal change**
-
-   * If the prompt is already good, leave it alone.
-
-4. **Model adaptation second**
-
-   * Apply model-specific guidance only when it materially improves the rewrite.
-
-5. **Evidence over folklore**
-
-   * Prefer broadly supported prompting practices over model-specific myths.
-
----
-
-## What It Does
+### 📦 What It Can Do
 
 PromptShift can:
+- Clean ambiguous prompts
+- Normalize structure
+- Fix missing constraints
+- Detect missing output formats
+- Adapt prompts across model families
+- Improve consistency across LLMs
 
-* Clarify ambiguous instructions.
-* Normalize prompt structure.
-* Remove contradictions.
-* Reduce redundancy.
-* Add output schemas when needed.
-* Adapt prompts across model families.
-* Preserve original intent.
+### 🚫 What It Does NOT Do
 
-PromptShift intentionally avoids:
+PromptShift does NOT:
+- Invent requirements
+- Add fake expertise or roles
+- Inflate prompts for appearance
+- Guarantee better outputs
+- Replace prompt iteration
+- Override user intent
 
-* Prompt bloat.
-* Artificial complexity.
-* Role inflation.
-* Requirement invention.
-* Unsupported optimization tricks.
+### 🧪 Example
 
----
-
-## Workflow
-
-```text
-Input Prompt
-      │
-      ▼
-   Triage
-      │
-      ▼
- Clarify Intent
-      │
-      ▼
- Repair Issues
-      │
-      ▼
- Minimal Model Adaptation
-      │
-      ▼
- Optimized Prompt
-```
-
----
-
-## Benchmarking
-
-PromptShift includes an initial benchmark suite covering:
-
-- Coding
-- UI/UX
-- Writing
-- Reasoning
-- RAG
-
-See `/benchmarks` for cases and evaluation criteria.
-
----
-
-## Example
-
-### Input
+**Input**
 
 ```text
 Summarize the attached article about recent climate policy developments and their implications for global emissions.
 ```
 
-### Output
+**Output**
 
-```text
 ## ANALYSIS
-
-The prompt is underspecified because it does not define output shape or length. The task itself is clear.
+The prompt is underspecified: no output format or constraints defined.
 
 ## OPTIMIZED PROMPT
-
 Summarize the attached article about recent climate policy developments and their implications for global emissions.
 
-Output requirements:
+Requirements:
 - 6 bullet points
-- One sentence per bullet
+- 1 sentence per bullet
 - Maximum 200 words
 
 ## CHANGES
-
-Added explicit output structure.
-Added length constraint.
+Added explicit structure and length constraint.
 
 ## CONFIDENCE
-
 High
-```
 
-Notice that the objective remains unchanged.
+The task is unchanged — only clarity is improved.
 
-PromptShift improves clarity without redefining the task.
+### 🧠 Supported Model Profiles
 
----
+PromptShift includes lightweight adaptation rules for:
 
-## Supported Adaptation Profiles
+- Claude (Opus / Sonnet / Haiku)
+- GPT (reasoning models)
+- Gemini
+- Grok
+- DeepSeek
+- Llama
+- Mistral
+- Qwen / Kimi
+- Command R+
 
-| Profile            | Typical Use Case              |
-| ------------------ | ----------------------------- |
-| Unknown / Mixed    | Safe default behavior         |
-| Reasoning-Oriented | Logic, planning, analysis     |
-| Format-Sensitive   | Structured outputs, schemas   |
-| Retrieval-Oriented | Source-grounded tasks         |
-| Conversational     | Natural-language interactions |
+These are heuristics, not guarantees.
 
-The skill includes model-family mappings for Claude, GPT, Gemini, Grok, DeepSeek, Llama, Mistral, Qwen, Kimi, and Command R+.
+### 📊 Design Philosophy
 
----
+PromptShift is not:
 
-## Non-Goals
+- a prompt generator
+- a persona builder
+- a prompt marketing tool
 
-PromptShift does not:
+It is:
 
-* Guarantee better outputs.
-* Replace prompt iteration.
-* Add missing business requirements.
-* Inject domain expertise automatically.
-* Depend on hidden chain-of-thought.
-* Optimize for benchmark scores.
+A minimal transformation layer between intent and execution.
 
----
+### 🧪 Benchmarking
 
-## Installation
+The repo includes benchmark cases for:
+
+- Coding
+- UI generation
+- Writing tasks
+- Reasoning tasks
+- RAG-style prompts
+
+See `./benchmarks` for details.
+
+### 📥 Installation
 
 ```bash
 git clone https://github.com/Alvaro-Manzo/promptshift.git
 ```
 
-Copy `skill/SKILL.md` into your Claude Skills directory and enable the skill.
+Copy `skill/SKILL.md` into your Claude Skills directory and enable it.
 
----
+### 🤝 Contributing
 
-## Contributing
+Contributions are welcome, especially for:
 
-Contributions are welcome.
+- Edge cases where intent drift happens
+- Model-specific failure patterns
+- Better evaluation benchmarks
 
-When proposing a new adaptation rule:
+Please include reasoning, not just edits.
 
-* Explain why it helps.
-* Provide evidence or repeatable observations.
-* Prefer general principles over model-specific quirks.
+### 📜 License
 
----
-
-## License
-
-MIT License © 2026 Alvaro Manzo
+MIT © 2026 Alvaro-Manzo
