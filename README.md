@@ -4,7 +4,7 @@
 
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)  
 [![Status](https://img.shields.io/badge/status-active-brightgreen.svg)](https://github.com/Alvaro-Manzo/promptshift)  
-[![Made for Claude Skills](https://img.shields.io/badge/made%20for-Claude%20Skills-orange.svg)](skill/SKILL.md)
+[![Made for Claude Skills](https://img.shields.io/badge/made%20for-Claude%20Skills-orange.svg)](SKILL.md)
 
 > PromptShift is a model-aware prompt adapter for Claude.
 
@@ -34,7 +34,7 @@ Without adding:
 
 ## ⚙️ Why It Exists
 
-Prompt optimization tools often “help” by rewriting your prompt into something more verbose, like:
+Prompt optimization tools often "help" by rewriting your prompt into something more verbose, like:
 
 **Input**
 
@@ -48,14 +48,14 @@ Typical optimizer output (problematic):
 Act as an expert analyst and provide strategic insights, risks, and implications...
 ```
 
-That’s not the same task anymore. PromptShift treats that as intent drift.
+That's not the same task anymore. PromptShift treats that as intent drift.
 
 ### 🧩 Core Principles
 - **Clarity first** — Remove ambiguity before adding structure.
 - **Preserve intent** — Never invent goals, audiences, or constraints.
 - **Minimal change** — If the prompt is already good → leave it.
 - **Model-aware (not model-dependent)** — Adapt only when it measurably improves output.
-- **No prompt inflation** — Avoid unnecessary roles, fluff, or “AI personas”.
+- **No prompt inflation** — Avoid unnecessary roles, fluff, or "AI personas".
 
 ### 🔄 How It Works
 
@@ -166,7 +166,7 @@ See `./benchmarks` for details.
 git clone https://github.com/Alvaro-Manzo/promptshift.git
 ```
 
-Copy `skill/SKILL.md` into your Claude Skills directory and enable it.
+Copy `SKILL.md` into your Claude Skills directory and enable it.
 
 ### 🤝 Contributing
 
