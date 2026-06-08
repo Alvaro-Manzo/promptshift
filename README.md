@@ -113,6 +113,20 @@ Input Prompt
 
 ---
 
+## Benchmarking
+
+PromptShift includes an initial benchmark suite covering:
+
+- Coding
+- UI/UX
+- Writing
+- Reasoning
+- RAG
+
+See `/benchmarks` for cases and evaluation criteria.
+
+---
+
 ## Example
 
 ### Input
