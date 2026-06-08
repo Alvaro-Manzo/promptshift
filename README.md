@@ -2,7 +2,7 @@
 
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Active](https://img.shields.io/badge/status-active-brightgreen.svg)](https://github.com/Alvaro-Manzo/promptshift)
-[![Made for Claude Skills](https://img.shields.io/badge/made%20for-Claude%20Skills-blueviolet.svg)](skill/SKILL.md)
+[![Made for Claude Skills](https://img.shields.io/badge/made%20for-Claude%20Skills-orange.svg)](skill/SKILL.md)
 
 PromptShift is a model-aware prompt adapter for Claude.
 
