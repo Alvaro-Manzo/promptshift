@@ -176,7 +176,7 @@ Contributions are welcome, especially for:
 - Model-specific failure patterns
 - Better evaluation benchmarks
 
-Please include reasoning, not just edits.
+Please read CONTRIBUTE.md before making any PR or Issue, include reasoning, not just edits.
 
 ### 📜 License
 
